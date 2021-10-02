@@ -1,0 +1,61 @@
+service: tickle-api
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  deploymentBucket: tickle-dev
+  timeout: 120
+  region: ap-northeast-2
+  vpc:
+    securityGroupIds:
+      - sg-096df6666f37487d1
+    subnetIds:
+      - subnet-d71de098
+      - subnet-cab0cab1
+      - subnet-046ce56f
+      - subnet-aaab65f5
+
+package:
+  include:
+    - config/*
+
+functions:
+  rest:
+    handler: src/handler.handler
+    events:
+      - http:
+          path: /
+          method: get
+          cors: true
+      - http:
+          path: /
+          method: post
+          cors: true
+      - http:
+          path: /
+          method: put
+          cors: true
+      - http:
+          path: /
+          method: delete
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: get
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: post
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: put
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: delete
+          cors: true

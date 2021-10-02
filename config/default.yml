@@ -1,0 +1,7 @@
+database:
+  master:
+    host: database-1.cizevnvcskpf.ap-northeast-2.rds.amazonaws.com
+    user: kakaloto85
+    password: Tickle2315!
+    database: tickle
+    namedPlaceholders: true
