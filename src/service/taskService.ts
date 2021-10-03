@@ -24,12 +24,12 @@ class TaskService {
     try {
       const randomNum = req.query.num || 5;
       const [result] = await this.db.query<RowDataPacket[]>(
-        "select T.* from Task as T, TaskOfToday as TT where TT.today = DATE(NOW()) and T.id = TT.taskId limit ?",
+        "select T.* from Task as T, TaskOfToday as TT where TT.today = CURDATE() and T.id = TT.taskId limit ?",
         [randomNum]
       );
       if (req.query.userId !== null) {
         const [completedList] = await this.db.query<RowDataPacket[]>(
-          "select CT.taskId, MAX(CT.completedAt) as completedAt from CompletedTask as CT where CT.userId=? and DATE(CT.completedAt)=DATE(NOW()) group by CT.taskId",
+          "select CT.taskId, MAX(CT.completedAt) as completedAt from CompletedTask as CT where CT.userId=? and DATE(CT.completedAt)=CURDATE()",
           [req.query.userId]
         );
         console.log(completedList);

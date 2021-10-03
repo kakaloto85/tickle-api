@@ -59,4 +59,4 @@ functions:
           path: /{proxy+}
           method: delete
           cors: true
-      - schedule: cron(0 12 * * ? *)
+      - schedule: cron(0 15 * * ? *)
