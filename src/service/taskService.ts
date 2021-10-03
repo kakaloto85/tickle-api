@@ -22,18 +22,32 @@ class TaskService {
   }
   public async getRandomTasks(req: express.Request, res: express.Response) {
     try {
-      const [[result]] = await this.db.query<RowDataPacket[]>(
-        "select count(*) as count from Task where"
+      const randomNum = req.query.num || 5;
+      const [result] = await this.db.query<RowDataPacket[]>(
+        "select T.* from Task as T, TaskOfToday as TT where TT.today = DATE(NOW()) and T.id = TT.taskId limit ?",
+        [randomNum]
       );
-      const randomNum = Number(req.query.num) || 5;
-
-      const len = result.count;
-      const today = new Date();
-      const encoded = today.getDate() + today.getFullYear() + today.getMonth();
-      const index = encoded % len;
-      const randomIndexList = [];
-      const counter = 0;
-
+      if (req.query.userId !== null) {
+        const [completedList] = await this.db.query<RowDataPacket[]>(
+          "select CT.taskId, MAX(CT.completedAt) as completedAt from CompletedTask as CT where CT.userId=? and DATE(CT.completedAt)=DATE(NOW()) group by CT.taskId",
+          [req.query.userId]
+        );
+        console.log(completedList);
+        return res.status(200).json({
+          status: 200,
+          data: result.map((task) => {
+            const completed = completedList.find((c) => c.taskId === task.id);
+            if (completed) {
+              return {
+                ...task,
+                completed: true,
+                completedAt: completed.completedAt,
+              };
+            }
+            return { ...task, completed: false, completedAt: null };
+          }),
+        });
+      }
       return res.status(200).json({
         status: 200,
         data: result,

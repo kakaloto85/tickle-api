@@ -6,6 +6,9 @@ const taskRouter = express.Router();
 taskRouter.get("/", function (req, res) {
   taskService.getAll(req, res);
 });
+taskRouter.get("/today", function (req, res) {
+  taskService.getRandomTasks(req, res);
+});
 
 taskRouter.get("/:taskId", function (req, res) {
   taskService.getOne(req, res);
