@@ -42,13 +42,36 @@ class TaskService {
       return res.status(400).json({ status: 400, message: err.message });
     }
   }
+  public async createRandomIndexs(num?: number) {
+    const [[count]] = await this.db.query<RowDataPacket[]>(
+      "select count(*) as count from Task"
+    );
+    const len = count.count;
+    // const today = new Date();
+    // const encoded = today.getDate() + today.getFullYear() + today.getMonth();
+    // const startIndex = encoded % len;
+    let randomIndexArray: number[] = [];
+    const randomNum = num || 5;
 
+    while (randomIndexArray.length < randomNum) {
+      const index = Math.floor(Math.random() * (len - 1) + 1) || 1;
+      if (randomIndexArray.indexOf(index) === -1) {
+        randomIndexArray.push(index);
+      }
+    }
+    console.log("randomIndexArray", randomIndexArray);
+    const today = new Date();
+    const [result] = await this.db.query<RowDataPacket[]>(
+      "insert into TaskOfToday(taskId, today) values ?",
+      [randomIndexArray.map((taskId) => [taskId, today])]
+    );
+  }
   public async getAllCompleteUser(req: express.Request, res: express.Response) {
     try {
       const [
         result,
       ] = await this.db.query(
-        "select U.* from User as U, CompletedTask as CT where U.id = CT.userId and CT.taskId= ? and DATE(CT.completedAt) =DATE(NOW())+1",
+        "select U.* from User as U, CompletedTask as CT where U.id = CT.userId and CT.taskId= ? and DATE(CT.completedAt) =DATE(NOW())",
         [req.params.taskId]
       );
 
