@@ -34,7 +34,7 @@ class CategoryService {
   ) {
     try {
       const [[result]] = await this.db.query<RowDataPacket[]>(
-        "select Sum(T.point) as sum  from Task as T, TaskCategoryMap as TCM, CompletedTask as CT where T.id = TCM.taskId and TCM.categoryId = ? and T.id = CT.taskId and DATE(CT.completedAt) =DATE(NOW())+1",
+        "select Sum(T.point) as sum  from Task as T, TaskCategoryMap as TCM, CompletedTask as CT where T.id = TCM.taskId and TCM.categoryId = ? and T.id = CT.taskId and DATE(CT.completedAt) =DATE(NOW())",
         [req.params.categoryId]
       );
 

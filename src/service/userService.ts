@@ -21,7 +21,7 @@ class UserService {
       const [
         result,
       ] = await this.db.query(
-        "select T.*,true as completed, CT.completedAt from Task as T, CompletedTask as CT where T.id = CT.taskId and CT.userId = ?",
+        "select T.*,true as completed, max(CT.completedAt) as completedAt from Task as T, CompletedTask as CT where T.id = CT.taskId and CT.userId = ? group by CT.taskId",
         [req.params.userId]
       );
 
@@ -40,7 +40,7 @@ class UserService {
         [req.params.userId]
       );
       const [completedList] = await this.db.query<RowDataPacket[]>(
-        "select distinct CT.taskId, CT.completedAt from CompletedTask as CT where CT.userId=? and DATE(CT.completedAt) =DATE(NOW())+1",
+        "select CT.taskId, MAX(CT.completedAt) as completedAt from CompletedTask as CT where CT.userId=? and DATE(CT.completedAt)=DATE(NOW()) group by CT.taskId",
         [req.params.userId]
       );
 
